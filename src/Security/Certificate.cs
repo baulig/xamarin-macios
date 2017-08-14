@@ -33,6 +33,7 @@
 #endif
 
 using System;
+using System.Threading;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using XamCore.ObjCRuntime;
@@ -43,6 +44,9 @@ namespace XamCore.Security {
 
 	public partial class SecCertificate : INativeObject, IDisposable {
 		internal IntPtr handle;
+		
+		static int retainCount;
+		static int disposeCount;
 		
 		// invoked by marshallers
 		public SecCertificate (IntPtr handle)
@@ -59,6 +63,11 @@ namespace XamCore.Security {
 			this.handle = handle;
 			if (!owns)
 				CFObject.CFRetain (handle);
+
+			Interlocked.Increment (ref retainCount);
+			Console.Error.WriteLine ($"MARTIN X DEBUG ALLOC #1: {retainCount} {handle.ToInt64 ():x}");
+			Console.Error.WriteLine (Environment.StackTrace);
+
 		}
 #if !COREBUILD
 		[DllImport (Constants.SecurityLibrary, EntryPoint="SecCertificateGetTypeID")]
@@ -101,6 +110,9 @@ namespace XamCore.Security {
 			handle = certificate.Impl.GetNativeAppleCertificate ();
 			if (handle != IntPtr.Zero) {
 				CFObject.CFRetain (handle);
+				Interlocked.Increment (ref retainCount);
+				Console.Error.WriteLine ($"MARTIN X DEBUG ALLOC #2: {retainCount} {handle.ToInt64 ():x}");
+				Console.Error.WriteLine (Environment.StackTrace);
 				return;
 			}
 #endif
@@ -116,6 +128,9 @@ namespace XamCore.Security {
 			handle = impl.GetNativeAppleCertificate ();
 			if (handle != IntPtr.Zero) {
 				CFObject.CFRetain (handle);
+				Interlocked.Increment (ref retainCount);
+				Console.Error.WriteLine ($"MARTIN DEBUG ALLOC #3: {retainCount} {handle.ToInt64 ():x}");
+				Console.Error.WriteLine (Environment.StackTrace);
 				return;
 			}
 
@@ -134,6 +149,9 @@ namespace XamCore.Security {
 			handle = certificate.Impl.GetNativeAppleCertificate ();
 			if (handle != IntPtr.Zero) {
 				CFObject.CFRetain (handle);
+				Interlocked.Increment (ref retainCount);
+				Console.Error.WriteLine ($"MARTIN DEBUG ALLOC #4: {retainCount} {handle.ToInt64 ():x}");
+				Console.Error.WriteLine (Environment.StackTrace);
 				return;
 			}
 #endif
@@ -379,6 +397,9 @@ namespace XamCore.Security {
 #endif
 		{
 			if (handle != IntPtr.Zero){
+				Interlocked.Decrement (ref retainCount);
+				var count = Interlocked.Increment (ref disposeCount);
+				Console.Error.WriteLine ($"MARTIN X DEBUG DISPOSE: {count} {retainCount}");
 				CFObject.CFRelease (handle);
 				handle = IntPtr.Zero;
 			}
