@@ -119,6 +119,8 @@ namespace Xamarin.Bundler {
 
 		public Dictionary<string, string> EnvironmentVariables = new Dictionary<string, string> ();
 
+		public bool UseSharedAppleCrypto = true;
+
 		//
 		// Linker config
 		//

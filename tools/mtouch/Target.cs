@@ -1488,6 +1488,11 @@ namespace Xamarin.Bundler
 				linker_flags.AddLinkWith (libilgen);
 			}
 
+			if (App.UseSharedAppleCrypto) {
+				string libapplecrypto = Path.Combine (libdir, "libmono-apple-crypto.dylib");
+				AddToBundle (libapplecrypto);
+			}
+
 			if (!string.IsNullOrEmpty (App.UserGccFlags))
 				linker_flags.AddOtherFlag (App.UserGccFlags);
 

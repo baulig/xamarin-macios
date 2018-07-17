@@ -1302,7 +1302,7 @@ xamarin_initialize ()
 	xamarin_initialize_dynamic_runtime (NULL);
 #endif
 	
-	mono_dllmap_insert (NULL, "System.Security.Cryptography.Native.Apple", NULL, "__Internal", NULL);
+	mono_dllmap_insert (NULL, "System.Security.Cryptography.Native.Apple", NULL, "mono-apple-crypto", NULL);
 	mono_dllmap_insert (NULL, "System.Native", NULL, "__Internal", NULL);
 
 	xamarin_insert_dllmap ();
