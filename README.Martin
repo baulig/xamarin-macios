@@ -1,0 +1,7 @@
+Fastbuild:
+
+1.) Do a `make -j16 install` in `external/mono/sdks/builds/ios-sim64-release-mono`
+2.) Copy
+`cp external/mono/sdks/out/ios-sim64-release/lib/libmonosgen-2.0.* _ios-build/Library/Frameworks/Xamarin.iOS.framework/Versions/git/SDKs/MonoTouch.iphonesimulator.sdk/usr/lib/`.
+3.) Rebuild App.
+
