@@ -1626,6 +1626,10 @@ namespace Xamarin.Bundler {
 			if (App.Frameworks.Contains (library))
 				return;
 
+			// FIXME
+			if (library == "System.Security.Cryptography.Native.Apple")
+				library = "mono-apple-crypto";
+
 			// We need to check both the name and the shortened name, since we might get passed:
 			// full path - /foo/bar/libFoo.dylib
 			// just name - libFoo

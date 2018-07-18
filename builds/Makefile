@@ -316,6 +316,7 @@ $(eval $(call lipo_template_static,libmono-profiler-log.a,mono/profiler))
 $(eval $(call lipo_template_static,libmonosgen-2.0.a,mono/mini))
 $(eval $(call lipo_template_dynamic,libmonosgen-2.0.dylib,mono/mini))
 $(eval $(call lipo_template_dynamic,libMonoPosixHelper.dylib,support))
+$(eval $(call lipo_template_dynamic,libmono-apple-crypto.dylib,mono/metadata))
 
 mac32/data/mono-2.pc: .stamp-build-mac32
 install/mac64/bin/mono-sgen: .stamp-build-mac64
