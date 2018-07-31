@@ -882,7 +882,9 @@ namespace Xamarin.Bundler
 			if (app.Embeddinator)
 				return false;
 
-			return true;
+			// FIXME
+			return false;
+			// return true;
 		}
 
 		internal static PDictionary FromPList (string name)
