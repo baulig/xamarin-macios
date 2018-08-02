@@ -17,10 +17,17 @@ dir-native-apple::
 corlib-monotouch::
 	$(MAKE) -C $(MONO_ROOT)/mcs/class/corlib PROFILE=monotouch all install
 	cp $(MONO_ROOT)/mcs/class/lib/monotouch/mscorlib.dll $(IOS_BUILD)/lib/mono/Xamarin.iOS/
+	cp $(MONO_ROOT)/mcs/class/lib/monotouch/mscorlib.pdb $(IOS_BUILD)/lib/mono/Xamarin.iOS/
 
 system-monotouch::
 	$(MAKE) -C $(MONO_ROOT)/mcs/class/System PROFILE=monotouch all install
 	cp $(MONO_ROOT)/mcs/class/lib/monotouch/System.dll $(IOS_BUILD)/lib/mono/Xamarin.iOS/
+	cp $(MONO_ROOT)/mcs/class/lib/monotouch/System.pdb $(IOS_BUILD)/lib/mono/Xamarin.iOS/
+
+system-core-monotouch::
+	$(MAKE) -C $(MONO_ROOT)/mcs/class/System.Core PROFILE=monotouch all install
+	cp $(MONO_ROOT)/mcs/class/lib/monotouch/System.Core.dll $(IOS_BUILD)/lib/mono/Xamarin.iOS/
+	cp $(MONO_ROOT)/mcs/class/lib/monotouch/System.Core.pdb $(IOS_BUILD)/lib/mono/Xamarin.iOS/
 
 sim64-runtime::
 	$(MAKE) -C $(SIM64_BUILD_ROOT)/mono all install
