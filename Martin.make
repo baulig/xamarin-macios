@@ -42,20 +42,24 @@ mac-runtime::
 	cp $(MAC_BUILD_OUT)/lib/libmono-apple-crypto.* $(MAC_SDK_INSTALL)/lib/
 	cp $(MAC_BUILD_OUT)/lib/libmonosgen-* $(MAC_SDK_INSTALL)/lib/
 
-corlib-mac::
+corlib-xammac::
 	$(MAKE) -C $(MONO_ROOT)/mcs/class/corlib PROFILE=xammac all install
 	cp $(MONO_ROOT)/mcs/class/lib/xammac/mscorlib.dll $(MAC_SDK_INSTALL)/lib/mono/Xamarin.Mac/
 	cp $(MONO_ROOT)/mcs/class/lib/xammac/mscorlib.pdb $(MAC_SDK_INSTALL)/lib/mono/Xamarin.Mac/
 
-system-mac::
+system-xammac::
 	$(MAKE) -C $(MONO_ROOT)/mcs/class/System PROFILE=xammac all install
 	cp $(MONO_ROOT)/mcs/class/lib/xammac/System.dll $(MAC_SDK_INSTALL)/lib/mono/Xamarin.Mac/
 	cp $(MONO_ROOT)/mcs/class/lib/xammac/System.pdb $(MAC_SDK_INSTALL)/lib/mono/Xamarin.Mac/
 
-system-core-mac::
+system-core-xammac::
 	$(MAKE) -C $(MONO_ROOT)/mcs/class/System.Core PROFILE=xammac all install
 	cp $(MONO_ROOT)/mcs/class/lib/xammac/System.Core.dll $(MAC_SDK_INSTALL)/lib/mono/Xamarin.Mac/
 	cp $(MONO_ROOT)/mcs/class/lib/xammac/System.Core.pdb $(MAC_SDK_INSTALL)/lib/mono/Xamarin.Mac/
 
-nm-crypto::
+nm-monotouch-crypto::
 	nm $(SIM64_BUILD_ROOT)/mono/metadata/.libs/libmono-apple-crypto.dylib
+
+nm-xammac-crypto::
+	nm $(MAC_BUILD_ROOT)/mono/metadata/.libs/libmono-apple-crypto.dylib
+
