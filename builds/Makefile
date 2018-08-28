@@ -199,7 +199,8 @@ MAC_BCL_TARGETS = \
 
 MAC_TARGETS = \
 	$(MAC_DESTDIR)$(MAC_FRAMEWORK_CURRENT_DIR)/lib/libmono-profiler-log.a \
-	$(MAC_DESTDIR)$(MAC_FRAMEWORK_CURRENT_DIR)/lib/libmono-system-native.a \
+	$(MAC_DESTDIR)$(MAC_FRAMEWORK_CURRENT_DIR)/lib/libmono-native-compat.dylib \
+	$(MAC_DESTDIR)$(MAC_FRAMEWORK_CURRENT_DIR)/lib/libmono-native-unified.dylib \
 	$(MAC_DESTDIR)$(MAC_FRAMEWORK_CURRENT_DIR)/lib/libmono-2.0.dylib \
 	$(MAC_DESTDIR)$(MAC_FRAMEWORK_CURRENT_DIR)/lib/libmono-2.0.a \
 	$(MAC_DESTDIR)$(MAC_FRAMEWORK_CURRENT_DIR)/lib/pkgconfig/mono-2.pc \
@@ -315,9 +316,10 @@ endef
 
 $(eval $(call lipo_template_static,libmono-profiler-log.a,mono/profiler))
 $(eval $(call lipo_template_static,libmonosgen-2.0.a,mono/mini))
-$(eval $(call lipo_template_static,libmono-system-native.a,mono/metadata))
 $(eval $(call lipo_template_dynamic,libmonosgen-2.0.dylib,mono/mini))
 $(eval $(call lipo_template_dynamic,libMonoPosixHelper.dylib,support))
+$(eval $(call lipo_template_dynamic,libmono-native-compat.dylib,mono/native))
+$(eval $(call lipo_template_dynamic,libmono-native-unified.dylib,mono/native))
 
 mac32/data/mono-2.pc: .stamp-build-mac32
 install/mac64/bin/mono-sgen: .stamp-build-mac64
@@ -827,11 +829,16 @@ $(eval SIM_TARGET_LIBMONOSGEN:=$(SIM_TARGET_LIBMONOSGEN) $(BUILD_DESTDIR)/$(2)/l
 $(eval SIM_TARGET_SHAREDMONOSGEN:=$(SIM_TARGET_SHAREDMONOSGEN) $(BUILD_DESTDIR)/$(2)/lib/libmonosgen-2.0.dylib)
 $(eval SIM_TARGET_LIBLOGPROFILER:=$(SIM_TARGET_LIBLOGPROFILER) $(BUILD_DESTDIR)/$(2)/lib/libmono-profiler-log-static.a)
 $(eval SIM_TARGET_SHAREDLIBLOGPROFILER:=$(SIM_TARGET_SHAREDLIBLOGPROFILER) $(BUILD_DESTDIR)/$(2)/tmp-lib/libmono-profiler-log.0.dylib)
+$(eval SIM_TARGET_LIBMONONATIVECOMPAT:=$(SIM_TARGET_LIBMONONATIVECOMPAT) $(BUILD_DESTDIR)/$(2)/lib/libmono-native-compat.dylib)
+$(eval SIM_TARGET_LIBMONONATIVEUNIFIED:=$(SIM_TARGET_LIBMONONATIVEUNIFIED) $(BUILD_DESTDIR)/$(2)/lib/libmono-native-unified.dylib)
+
 
 $(BUILD_DESTDIR)/$(2)/lib/libmonosgen-2.0.a: .stamp-build-$(2)
 $(BUILD_DESTDIR)/$(2)/lib/libmonosgen-2.0.dylib: .stamp-build-$(2)
 $(BUILD_DESTDIR)/$(2)/lib/libmono-profiler-log-static.a: .stamp-build-$(2)
 $(BUILD_DESTDIR)/$(2)/lib/libmono-profiler-log.0.dylib: .stamp-build-$(2)
+$(BUILD_DESTDIR)/$(2)/lib/libmono-native-compat.dylib: .stamp-build-$(2)
+$(BUILD_DESTDIR)/$(2)/lib/libmono-native-unified.dylib: .stamp-build-$(2)
 
 $(BUILD_DESTDIR)/$(2)/tmp-lib/libmono-profiler-log.0.dylib: $(BUILD_DESTDIR)/$(2)/lib/libmono-profiler-log.0.dylib | $(BUILD_DESTDIR)/$(2)/tmp-lib
 	$(Q) cp $$< $$@
@@ -863,6 +870,8 @@ IPHONESIMULATOR_TARGETS = \
 	$(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib/libmonosgen-2.0.dylib         \
 	$(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib/libmono-profiler-log.a        \
 	$(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib/libmono-profiler-log.dylib    \
+	$(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib/libmono-native-compat.dylib   \
+	$(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib/libmono-native-unified.dylib   \
 	$(IOS_DESTDIR)$(IPHONESIMULATOR_SDK)/Frameworks/Mono.framework/Mono       \
 	$(IOS_DESTDIR)$(IPHONESIMULATOR_SDK)/Frameworks/Mono.framework/Info.plist \
 
@@ -883,6 +892,14 @@ $(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib/libmono-profiler-log.a: $(SIM_TARGET
 
 $(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib/libmono-profiler-log.dylib: $(SIM_TARGET_SHAREDLIBLOGPROFILER) | $(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib
 	$(Q) lipo $(SIM_TARGET_SHAREDLIBLOGPROFILER) -create -output $@
+	$(Q) dsymutil -t 4 -o $@.dSYM $@
+
+$(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib/libmono-native-compat.dylib: $(SIM_TARGET_LIBMONONATIVECOMPAT) | $(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib
+	$(Q) lipo $(SIM_TARGET_LIBMONONATIVECOMPAT) -create -output $@
+	$(Q) dsymutil -t 4 -o $@.dSYM $@
+
+$(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib/libmono-native-unified.dylib: $(SIM_TARGET_LIBMONONATIVEUNIFIED) | $(IOS_DESTDIR)$(IPHONESIMULATOR_PREFIX)/lib
+	$(Q) lipo $(SIM_TARGET_LIBMONONATIVEUNIFIED) -create -output $@
 	$(Q) dsymutil -t 4 -o $@.dSYM $@
 
 $(IPHONESIMULATOR_DIRECTORIES):

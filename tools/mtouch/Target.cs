@@ -1507,6 +1507,28 @@ namespace Xamarin.Bundler
 				linker_flags.AddOtherFlag ("-fapplication-extension");
 			}
 
+			string libnative;
+			switch (App.MonoNativeMode) {
+			case MonoNativeMode.Unified:
+				libnative = Path.Combine (libdir, "libmono-native-unified.dylib");
+				break;
+			case MonoNativeMode.Compat:
+				libnative = Path.Combine (libdir, "libmono-native-combat.dylib");
+				break;
+			case MonoNativeMode.Combined:
+				libnative = Path.Combine (libdir, "libmono-native.dylib");
+				break;
+			default:
+				libnative = null;
+				break;
+			}
+			Console.Error.WriteLine ($"TARGET NATIVE: {this} {App} {App.MonoNativeMode} {libnative}");
+			if (libnative != null) {
+				linker_flags.AddLinkWith (libnative);
+				if (App.HasFrameworksDirectory)
+					AddToBundle (libnative);
+			}
+
 			link_task = new NativeLinkTask
 			{
 				Target = this,

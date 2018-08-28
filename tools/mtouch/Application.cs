@@ -61,6 +61,13 @@ namespace Xamarin.Bundler {
 		Custom,
 	}
 
+	public enum MonoNativeMode {
+		None,
+		Compat,
+		Unified,
+		Combined
+	}
+
 	public partial class Application
 	{
 		public const string ProductName = "Xamarin.iOS";
@@ -118,6 +125,8 @@ namespace Xamarin.Bundler {
 		public Dictionary<string, string> LLVMOptimizations = new Dictionary<string, string> ();
 
 		public Dictionary<string, string> EnvironmentVariables = new Dictionary<string, string> ();
+
+		public MonoNativeMode MonoNativeMode { get; private set; }
 
 		//
 		// Linker config
@@ -1365,9 +1374,23 @@ namespace Xamarin.Bundler {
 
 			InitializeCommon ();
 
+			SelectMonoNative ();
+
 			Driver.Watch ("Resolve References", 1);
 		}
-		
+
+		void SelectMonoNative ()
+		{
+			switch (Platform) {
+			case ApplePlatform.iOS:
+				MonoNativeMode = DeploymentTarget.Major >= 10 ? MonoNativeMode.Unified : MonoNativeMode.Compat;
+				break;
+			default:
+				MonoNativeMode = MonoNativeMode.None;
+				break;
+			}
+		}
+
 		void SelectRegistrar ()
 		{
 			// If the default values are changed, remember to update CanWeSymlinkTheApplication
@@ -1559,6 +1582,16 @@ namespace Xamarin.Bundler {
 						info.Sources.UnionWith (kvp.Value.Sources);
 					}
 				}
+			}
+
+			if (MonoNativeMode != MonoNativeMode.None) {
+				BundleFileInfo info;
+				var name = "libmono-native.dylib";
+				bundle_files[name] = info = new BundleFileInfo ();
+				var libname = GetLibNative (AssemblyBuildTarget.DynamicLibrary);
+				info.Sources.Add (libname);
+
+				Driver.Log (3, "Adding mono-native library {0} for {1}.", libname, MonoNativeMode);
 			}
 
 			// And from ourselves
@@ -1800,6 +1833,33 @@ namespace Xamarin.Bundler {
 				throw ErrorHelper.CreateError (100, "Invalid assembly build target: '{0}'. Please file a bug report with a test case (http://bugzilla.xamarin.com).", build_target);
 			}
 		}
+
+		public string GetLibNative (AssemblyBuildTarget build_target)
+		{
+			string libname;
+			switch (MonoNativeMode) {
+			case MonoNativeMode.Unified:
+				libname = "libmono-native-unified";
+				break;
+			case MonoNativeMode.Compat:
+				libname = "libmono-native-compat";
+				break;
+			case MonoNativeMode.Combined:
+				libname = "libmono-native";
+				break;
+			default:
+				throw ErrorHelper.CreateError (100, "Invalid mono native type: '{0}'. Please file a bug report with a test case (http://bugzilla.xamarin.com).", MonoNativeMode);
+			}
+			switch (build_target) {
+			case AssemblyBuildTarget.StaticObject:
+				return Path.Combine (Driver.GetMonoTouchLibDirectory (this), libname + ".a");
+			case AssemblyBuildTarget.DynamicLibrary:
+				return Path.Combine (Driver.GetMonoTouchLibDirectory (this), libname + ".dylib");
+			default:
+				throw ErrorHelper.CreateError (100, "Invalid assembly build target: '{0}'. Please file a bug report with a test case (http://bugzilla.xamarin.com).", build_target);
+			}
+		}
+
 
 		// this will filter/remove warnings that are not helpful (e.g. complaining about non-matching armv6-6 then armv7-6 on fat binaries)
 		// and turn the remaining of the warnings into MT5203 that MonoDevelop will be able to report as real warnings (not just logs)
