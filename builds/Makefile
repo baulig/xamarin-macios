@@ -118,7 +118,6 @@ MAC_ASSEMBLY_NAMES = \
 	I18N.West \
 	mscorlib \
 	Microsoft.CSharp \
-	Mono.CSharp \
 	Mono.CompilerServices.SymbolWriter \
 	Mono.Data.Sqlite \
 	Mono.Data.Tds \
@@ -1497,11 +1496,11 @@ build-llvm32: .stamp-build-llvm
 build-llvm64: .stamp-build-llvm
 
 .stamp-build-llvm: $(SDK_CONFIG)
-	$(MAKE) -C $(SDK_BUILDDIR) build-ios-llvm $(SDK_ARGS)
+#	$(MAKE) -C $(SDK_BUILDDIR) build-ios-llvm $(SDK_ARGS)
 	$(Q) touch $@
 
 clean-llvm: $(SDK_CONFIG)
-	$(MAKE) -C $(SDK_BUILDDIR) clean-ios-llvm $(SDK_ARGS)
+#	$(MAKE) -C $(SDK_BUILDDIR) clean-ios-llvm $(SDK_ARGS)
 	$(RM) .stamp-*-llvm*
 
 .PHONY: install-llvm64 llvm llvm64
